@@ -2,7 +2,7 @@ import Post from "../models/PostModel.js";
 
 export const getPosts = (req, res) => {
   Post.find()
-    .sort({ date: -1 })
+    .sort({ createdAt: -1 })
     .then((posts) => res.json(posts))
     .catch((err) => console.log(err));
 };
@@ -12,6 +12,7 @@ export const createPost = (req, res) => {
     symbol: req.body.symbol,
     desc: req.body.desc,
     author: req.body.author,
+    image: req.body.image,
   });
   newPost.save().then((item) => res.json(item));
 };

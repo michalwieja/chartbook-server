@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const psotSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     symbol: {
       type: String,
@@ -26,6 +26,6 @@ const psotSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Post = mongoose.model("Post", psotSchema);
+const Post = mongoose.model("Post", postSchema);
 
 export default Post;
