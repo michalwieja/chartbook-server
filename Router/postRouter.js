@@ -5,11 +5,12 @@ import {
   editPost,
   deletePost,
 } from "../controllers/index.js";
+import verifyToken from "./verifyToken.js";
 
 const router = express.Router();
 
 router.get("/", getPosts);
-router.post("/", createPost);
+router.post("/", verifyToken, createPost);
 router.patch("/:id", editPost);
 router.delete("/:id", deletePost);
 
