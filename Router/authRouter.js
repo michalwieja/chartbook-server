@@ -1,29 +1,15 @@
 import express from "express";
 import User from "../models/UserModel.js";
-import Joi from "joi";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import verifyToken from "./verifyToken.js";
 
 const router = express.Router();
-// schema validataion
-const schema = Joi.object({
-  name: Joi.string().min(3).required(),
-  email: Joi.string().min(3).required().email(),
-  password: Joi.string().min(6).required(),
-});
 
 router.post("/register", async (req, res) => {
-  const schema = Joi.object({
-    name: Joi.string().min(3).required(),
-    email: Joi.string().min(3).required().email(),
-    password: Joi.string().min(6).required(),
-  });
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
   // chceck is user exists
   const user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(400).send("Email already taken");
+  if (user) return res.status(400).json({ msg: "Email already taken" });
   //hash
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -43,7 +29,7 @@ router.post("/register", async (req, res) => {
     });
     res.json({
       token,
-      savedUser: {
+      user: {
         id: savedUser._id,
         name: savedUser.name,
         email: savedUser.email,
@@ -55,23 +41,23 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const schema = Joi.object({
-    email: Joi.string().min(3).required().email(),
-    password: Joi.string().min(6).required(),
-  });
-  //validation
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
   // chceck is user exists
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("wrong email");
+  if (!user) return res.status(400).json({ msg: "wrong email" });
   //hash
   const validUser = await bcrypt.compare(req.body.password, user.password);
-  if (!validUser) return res.status(400).send("wrong pass");
+  if (!validUser) return res.status(400).json({ msg: "wrong pass" });
 
   // create and asign a token
   const token = jwt.sign({ id: user._id }, process.env.TOKEN_SECRET);
-  res.header("auth-token", token).send(token);
+  res.json({
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    },
+  });
 });
 
 router.get("/user", verifyToken, (req, res) => {
