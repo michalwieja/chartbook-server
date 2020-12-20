@@ -24,7 +24,7 @@ export const editPost = (req, res) => {
     author: req.body.author,
   };
   Post.findByIdAndUpdate(id, updatedPost, { new: true })
-    .then(res.json("updated"))
+    .then(res.json(updatedPost))
     .catch((err) => console.log(err));
 };
 export const deletePost = (req, res) => {
