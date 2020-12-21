@@ -10,8 +10,8 @@ import verifyToken from "./verifyToken.js";
 const router = express.Router();
 
 router.get("/", getPosts);
-router.post("/", createPost);
-router.patch("/:id", editPost);
-router.delete("/:id", deletePost);
+router.post("/", verifyToken, createPost);
+router.patch("/:id", verifyToken, editPost);
+router.delete("/:id", verifyToken, deletePost);
 
 export default router;

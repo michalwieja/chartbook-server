@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
 
 import postRouter from "./Router/postRouter.js";
 import authRouter from "./Router/authRouter.js";
@@ -15,6 +16,17 @@ app.use(cors());
 
 app.use("/posts", postRouter);
 app.use("/auth", authRouter);
+
+//serve static in prod
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("chartbook-client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(
+      path.resolve(__dirname, "chartbook-client", "build", "index.html")
+    );
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 
